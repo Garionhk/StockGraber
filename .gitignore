@@ -1,0 +1,38 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+
+# --- Virtual environments ---
+.venv/
+venv/
+env/
+ENV/
+
+# --- PyInstaller build output ---
+build/
+dist/
+*.manifest
+
+# --- Local data / cache (user-specific, regenerated at runtime) ---
+stockgraber.db
+*.db-journal
+*.db-wal
+
+# --- Design bundle (large generated export from claude.ai/design) ---
+StockGraber.dc.html
+
+# --- Logs / temp ---
+*.log
+_smoke_*.py
+
+# --- Editors / OS ---
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# --- Claude Code local settings ---
+.claude/settings.local.json

@@ -1,0 +1,379 @@
+
+</helmet>
+
+<div style="position:fixed;inset:0;background:#000;padding:18px;font-family:Manrope, sans-serif;">
+ <div style="width:100%;height:100%;display:flex;flex-direction:column;border-radius:15px;overflow:hidden;border:1px solid #1b1b21;background:#060607;box-shadow:0 40px 90px rgba(0,0,0,0.7);">
+
+  <!-- TITLE BAR -->
+  <div style="height:46px;flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;padding:0 14px;background:#060607;border-bottom:1px solid #141418;">
+   <div style="display:flex;align-items:center;gap:11px;">
+    <div style="width:24px;height:24px;border-radius:7px;background:linear-gradient(135deg,#a855f7,#7c3aed);display:flex;align-items:center;justify-content:center;font-family:Manrope;font-weight:800;font-size:13px;color:#fff;">S</div>
+    <span style="font-family:Manrope;font-weight:700;font-size:13.5px;color:#e8eaed;letter-spacing:.01em;">StockGraber</span>
+    <span style="font-size:11px;color:#5a606b;font-family:'JetBrains Mono', monospace;">v2.0</span>
+    <span style="width:1px;height:16px;background:#1c1c22;margin:0 4px;"></span>
+    <span style="font-family:'JetBrains Mono', monospace;font-size:12px;color:#9aa0a8;">PLTR · NASDAQ</span>
+   </div>
+   <div style="display:flex;align-items:center;gap:4px;">
+    <button style="width:30px;height:30px;display:flex;align-items:center;justify-content:center;background:transparent;border:none;border-radius:8px;color:#8a909a;cursor:pointer;" style-hover="background:rgba(255,255,255,0.06);color:#e8eaed;"><svg width="11" height="11" viewBox="0 0 11 11"><line x1="1" y1="6" x2="10" y2="6" stroke="currentColor" stroke-width="1.4"></line></svg></button>
+    <button style="width:30px;height:30px;display:flex;align-items:center;justify-content:center;background:transparent;border:none;border-radius:8px;color:#8a909a;cursor:pointer;" style-hover="background:rgba(255,255,255,0.06);color:#e8eaed;"><svg width="11" height="11" viewBox="0 0 11 11"><rect x="1.5" y="1.5" width="8" height="8" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.3"></rect></svg></button>
+    <button style="width:30px;height:30px;display:flex;align-items:center;justify-content:center;background:transparent;border:none;border-radius:8px;color:#8a909a;cursor:pointer;" style-hover="background:rgba(246,70,93,0.9);color:#fff;"><svg width="11" height="11" viewBox="0 0 11 11"><line x1="1.5" y1="1.5" x2="9.5" y2="9.5" stroke="currentColor" stroke-width="1.4"></line><line x1="9.5" y1="1.5" x2="1.5" y2="9.5" stroke="currentColor" stroke-width="1.4"></line></svg></button>
+   </div>
+  </div>
+
+  <!-- COMMAND BAR -->
+  <div style="flex:0 0 auto;display:flex;align-items:center;gap:13px;padding:11px 16px;background:#08080a;border-bottom:1px solid #141418;">
+   <div style="display:flex;align-items:center;gap:9px;background:#0d0d11;border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:8px 12px;">
+    <svg width="13" height="13" viewBox="0 0 13 13" style="opacity:.6;"><circle cx="5.5" cy="5.5" r="4" fill="none" stroke="#9aa0a8" stroke-width="1.3"></circle><line x1="8.6" y1="8.6" x2="11.5" y2="11.5" stroke="#9aa0a8" stroke-width="1.3"></line></svg>
+    <input defaultvalue="PLTR" spellcheck="false" style="width:60px;background:transparent;border:none;outline:none;color:#e8eaed;font-family:'JetBrains Mono', monospace;font-size:13px;font-weight:600;letter-spacing:.04em;">
+   </div>
+   <button style="padding:9px 17px;background:#a855f7;color:#fff;border:none;border-radius:10px;font-family:Manrope;font-weight:700;font-size:13px;cursor:pointer;box-shadow:0 2px 14px rgba(168,85,247,0.3);" style-hover="filter:brightness(1.12);">Load</button>
+
+   <span style="width:1px;height:24px;background:#17171c;"></span>
+
+   <div style="display:inline-flex;align-items:center;gap:2px;background:#0c0c10;border:1px solid rgba(255,255,255,0.06);border-radius:9px;padding:3px;">
+    <sc-for list="{{ tfList }}" as="b" hint-placeholder-count="6">
+     <button onclick="{{ b.onClick }}" style="{{ b.style }}">{{ b.label }}</button>
+    </sc-for>
+   </div>
+
+   <div style="flex:1 1 auto;"></div>
+
+   <div style="display:flex;align-items:center;gap:8px;">
+    <sc-for list="{{ chips }}" as="c" hint-placeholder-count="3">
+     <button onclick="{{ c.onClick }}" style="{{ c.style }}"><span style="{{ c.dot }}"></span>{{ c.label }}</button>
+    </sc-for>
+   </div>
+
+   <button onclick="{{ cmpSw.onClick }}" style="{{ comparePill }}"><span style="opacity:.6;font-weight:500;">vs</span> Hang Seng <span style="opacity:.55;">⌄</span></button>
+
+   <span style="width:1px;height:24px;background:#17171c;"></span>
+
+   <div style="display:flex;align-items:center;gap:6px;">
+    <button onclick="{{ zoomOut }}" style="width:34px;height:34px;display:flex;align-items:center;justify-content:center;background:#0d0d11;border:1px solid rgba(255,255,255,0.07);border-radius:9px;color:#cfd3da;font-size:18px;cursor:pointer;" style-hover="background:#17171c;">−</button>
+    <button onclick="{{ zoomIn }}" style="width:34px;height:34px;display:flex;align-items:center;justify-content:center;background:#0d0d11;border:1px solid rgba(255,255,255,0.07);border-radius:9px;color:#cfd3da;font-size:18px;cursor:pointer;" style-hover="background:#17171c;">+</button>
+    <button onclick="{{ reset }}" style="padding:0 14px;height:34px;background:#0d0d11;border:1px solid rgba(255,255,255,0.07);border-radius:9px;color:#9aa0a8;font-family:Manrope;font-size:12.5px;font-weight:600;cursor:pointer;" style-hover="background:#17171c;color:#e8eaed;">Reset</button>
+   </div>
+  </div>
+
+  <!-- BODY -->
+  <div style="flex:1;display:flex;min-height:0;">
+
+   <!-- CHART COLUMN -->
+   <div style="flex:1;min-width:0;display:flex;flex-direction:column;padding:14px;">
+    <div ref="{{ refStack }}" onmousemove="{{ onMove }}" onmouseleave="{{ onLeave }}" style="position:relative;flex:1;display:flex;flex-direction:column;gap:10px;min-height:0;cursor:crosshair;">
+
+     <!-- PRICE -->
+     <div style="position:relative;flex:1;min-height:230px;background:#050506;border:1px solid rgba(255,255,255,0.05);border-radius:12px;overflow:hidden;">
+      <canvas ref="{{ refPrice }}" style="position:absolute;inset:0;width:100%;height:100%;"></canvas>
+      <div style="position:absolute;top:12px;left:12px;z-index:3;background:rgba(8,8,10,0.78);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:10px 14px;font-family:'JetBrains Mono', monospace;pointer-events:none;">
+       <div ref="{{ rDate }}" style="font-size:11px;color:#8a909a;letter-spacing:.04em;margin-bottom:6px;">2026-06-24</div>
+       <div style="display:flex;gap:16px;font-size:13px;color:#cfd3da;">
+        <span><span style="color:#6a707a;">O</span> <span ref="{{ rO }}">0.00</span></span>
+        <span><span style="color:#6a707a;">H</span> <span ref="{{ rH }}">0.00</span></span>
+        <span><span style="color:#6a707a;">L</span> <span ref="{{ rL }}">0.00</span></span>
+        <span><span style="color:#6a707a;">C</span> <span ref="{{ rC }}" style="color:#e8eaed;font-weight:600;">0.00</span></span>
+       </div>
+       <div style="margin-top:5px;font-size:12px;display:flex;align-items:center;gap:6px;">
+        <span ref="{{ rArrow }}" style="color:#22c98a;">▲</span><span ref="{{ rChg }}" style="color:#22c98a;">+0.00  (+0.00%)</span>
+       </div>
+      </div>
+     </div>
+
+     <!-- VOLUME -->
+     <sc-if value="{{ showVol }}" hint-placeholder-val="{{ true }}">
+      <div style="position:relative;height:104px;flex:0 0 auto;background:#050506;border:1px solid rgba(255,255,255,0.05);border-radius:12px;overflow:hidden;">
+       <canvas ref="{{ refVolume }}" style="position:absolute;inset:0;width:100%;height:100%;"></canvas>
+       <div style="position:absolute;top:10px;left:12px;z-index:3;font-family:'JetBrains Mono', monospace;font-size:11px;font-weight:500;color:#8a909a;background:rgba(8,8,10,0.7);border:1px solid rgba(255,255,255,0.06);border-radius:7px;padding:4px 9px;pointer-events:none;">Volume</div>
+      </div>
+     </sc-if>
+
+     <!-- RSI -->
+     <sc-if value="{{ showRsi }}" hint-placeholder-val="{{ true }}">
+      <div style="position:relative;height:124px;flex:0 0 auto;background:#050506;border:1px solid rgba(255,255,255,0.05);border-radius:12px;overflow:hidden;">
+       <canvas ref="{{ refRsi }}" style="position:absolute;inset:0;width:100%;height:100%;"></canvas>
+       <div style="position:absolute;top:10px;left:12px;z-index:3;font-family:'JetBrains Mono', monospace;font-size:11px;font-weight:500;color:#8a909a;background:rgba(8,8,10,0.7);border:1px solid rgba(255,255,255,0.06);border-radius:7px;padding:4px 9px;pointer-events:none;">RSI · 14</div>
+      </div>
+     </sc-if>
+
+     <!-- MACD -->
+     <sc-if value="{{ showMacd }}" hint-placeholder-val="{{ true }}">
+      <div style="position:relative;height:146px;flex:0 0 auto;background:#050506;border:1px solid rgba(255,255,255,0.05);border-radius:12px;overflow:hidden;">
+       <canvas ref="{{ refMacd }}" style="position:absolute;inset:0;width:100%;height:100%;"></canvas>
+       <div style="position:absolute;top:10px;left:12px;z-index:3;font-family:'JetBrains Mono', monospace;font-size:11px;font-weight:500;color:#8a909a;background:rgba(8,8,10,0.7);border:1px solid rgba(255,255,255,0.06);border-radius:7px;padding:4px 9px;pointer-events:none;">MACD · 12,26,9</div>
+      </div>
+     </sc-if>
+
+     <canvas ref="{{ refOverlay }}" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:6;"></canvas>
+    </div>
+   </div>
+
+   <!-- SIDEBAR -->
+   <div style="width:316px;flex:0 0 316px;border-left:1px solid #141418;background:#070708;padding:16px;display:flex;flex-direction:column;gap:14px;overflow-y:auto;">
+
+    <!-- QUOTE -->
+    <div style="background:#0a0a0d;border:1px solid rgba(255,255,255,0.055);border-radius:13px;padding:16px;">
+     <div style="display:flex;align-items:flex-start;justify-content:space-between;">
+      <div>
+       <div style="font-family:'JetBrains Mono', monospace;font-size:18px;font-weight:700;color:#e8eaed;letter-spacing:.04em;">PLTR</div>
+       <div style="font-size:12px;color:#8a909a;margin-top:3px;">Palantir Technologies</div>
+      </div>
+      <span style="font-size:10px;color:#6a707a;font-family:'JetBrains Mono', monospace;border:1px solid #1c1c22;padding:3px 7px;border-radius:6px;">NASDAQ</span>
+     </div>
+     <div style="display:flex;align-items:baseline;gap:10px;margin-top:15px;">
+      <span style="font-family:'JetBrains Mono', monospace;font-size:30px;font-weight:700;color:#fff;letter-spacing:.01em;">{{ quoteClose }}</span>
+      <span style="{{ quotePill }}">{{ quoteArrow }} {{ quoteChg }}</span>
+     </div>
+     <div style="font-size:11px;color:#5a606b;margin-top:9px;font-family:'JetBrains Mono', monospace;">USD · Daily close</div>
+    </div>
+
+    <!-- INDICATORS -->
+    <div style="background:#0a0a0d;border:1px solid rgba(255,255,255,0.055);border-radius:13px;padding:16px;">
+     <div style="font-family:Manrope;font-size:11px;text-transform:uppercase;letter-spacing:.09em;color:#6a707a;font-weight:700;margin-bottom:12px;">MA Crossover</div>
+     <div style="display:flex;gap:3px;background:#0c0c10;border:1px solid rgba(255,255,255,0.06);border-radius:9px;padding:3px;">
+      <sc-for list="{{ presetList }}" as="p" hint-placeholder-count="4">
+       <button onclick="{{ p.onClick }}" style="{{ p.style }}">{{ p.label }}</button>
+      </sc-for>
+     </div>
+     <div style="display:flex;gap:10px;margin-top:12px;">
+      <div style="flex:1;background:#0c0c10;border:1px solid rgba(255,255,255,0.06);border-radius:9px;padding:9px 11px;">
+       <div style="font-size:10px;color:#6a707a;text-transform:uppercase;letter-spacing:.06em;">Fast</div>
+       <div style="font-family:'JetBrains Mono', monospace;font-size:16px;color:#4f8cff;font-weight:600;margin-top:2px;">{{ fastP }}</div>
+      </div>
+      <div style="flex:1;background:#0c0c10;border:1px solid rgba(255,255,255,0.06);border-radius:9px;padding:9px 11px;">
+       <div style="font-size:10px;color:#6a707a;text-transform:uppercase;letter-spacing:.06em;">Slow</div>
+       <div style="font-family:'JetBrains Mono', monospace;font-size:16px;color:#f3a13a;font-weight:600;margin-top:2px;">{{ slowP }}</div>
+      </div>
+     </div>
+     <div style="display:flex;align-items:center;justify-content:space-between;padding:11px 0 3px;">
+      <span style="font-size:13px;color:#cfd3da;">{{ emaSw.label }}</span>
+      <button onclick="{{ emaSw.onClick }}" style="{{ emaSw.track }}"><span style="{{ emaSw.knob }}"></span></button>
+     </div>
+
+     <div style="height:1px;background:rgba(255,255,255,0.06);margin:10px 0;"></div>
+     <div style="font-family:Manrope;font-size:11px;text-transform:uppercase;letter-spacing:.09em;color:#6a707a;font-weight:700;margin-bottom:4px;">Panels</div>
+     <sc-for list="{{ panelSwitches }}" as="row" hint-placeholder-count="3">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 0;">
+       <span style="font-size:13px;color:#cfd3da;">{{ row.label }}</span>
+       <button onclick="{{ row.onClick }}" style="{{ row.track }}"><span style="{{ row.knob }}"></span></button>
+      </div>
+     </sc-for>
+
+     <div style="height:1px;background:rgba(255,255,255,0.06);margin:8px 0;"></div>
+     <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0 3px;">
+      <span style="font-size:13px;color:#cfd3da;">{{ logSw.label }}</span>
+      <button onclick="{{ logSw.onClick }}" style="{{ logSw.track }}"><span style="{{ logSw.knob }}"></span></button>
+     </div>
+    </div>
+
+    <!-- COMPARISON -->
+    <div style="background:#0a0a0d;border:1px solid rgba(255,255,255,0.055);border-radius:13px;padding:16px;">
+     <div style="font-family:Manrope;font-size:11px;text-transform:uppercase;letter-spacing:.09em;color:#6a707a;font-weight:700;margin-bottom:12px;">Comparison</div>
+     <div style="display:flex;align-items:center;justify-content:space-between;">
+      <div>
+       <div style="font-size:13px;color:#cfd3da;">Hang Seng</div>
+       <div style="font-size:11px;color:#6a707a;font-family:'JetBrains Mono', monospace;margin-top:2px;">^HSI · rebased</div>
+      </div>
+      <button onclick="{{ cmpSw.onClick }}" style="{{ cmpSw.track }}"><span style="{{ cmpSw.knob }}"></span></button>
+     </div>
+    </div>
+
+    <!-- LEGEND -->
+    <div style="background:#0a0a0d;border:1px solid rgba(255,255,255,0.055);border-radius:13px;padding:16px;">
+     <div style="font-family:Manrope;font-size:11px;text-transform:uppercase;letter-spacing:.09em;color:#6a707a;font-weight:700;margin-bottom:13px;">Legend</div>
+     <div style="display:flex;flex-direction:column;gap:10px;">
+      <sc-for list="{{ legend }}" as="it" hint-placeholder-count="5">
+       <div style="display:flex;align-items:center;gap:11px;font-size:12.5px;color:#aab0b8;">
+        <span style="{{ it.gstyle }}">{{ it.glyph }}</span><span>{{ it.label }}</span>
+       </div>
+      </sc-for>
+     </div>
+    </div>
+
+    <!-- RANGE -->
+    <div style="background:#0a0a0d;border:1px solid rgba(255,255,255,0.055);border-radius:13px;padding:16px;">
+     <div style="font-family:Manrope;font-size:11px;text-transform:uppercase;letter-spacing:.09em;color:#6a707a;font-weight:700;margin-bottom:12px;">Date Range</div>
+     <div style="display:flex;gap:10px;">
+      <div style="flex:1;">
+       <div style="font-size:10px;color:#6a707a;text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px;">From</div>
+       <div style="background:#0c0c10;border:1px solid rgba(255,255,255,0.06);border-radius:9px;padding:9px 11px;font-family:'JetBrains Mono', monospace;font-size:13px;color:#cfd3da;">2015-01-01</div>
+      </div>
+      <div style="flex:1;">
+       <div style="font-size:10px;color:#6a707a;text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px;">To</div>
+       <div style="background:#0c0c10;border:1px solid rgba(255,255,255,0.06);border-radius:9px;padding:9px 11px;font-family:'JetBrains Mono', monospace;font-size:13px;color:#cfd3da;">2026-06-24</div>
+      </div>
+     </div>
+    </div>
+
+   </div>
+  </div>
+ </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script="" data-props="{&quot;$preview&quot;:{&quot;width&quot;:1480,&quot;height&quot;:920},&quot;accent&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#a855f7&quot;,&quot;options&quot;:[&quot;#a855f7&quot;,&quot;#22d3ee&quot;,&quot;#f59e0b&quot;,&quot;#e2e8f0&quot;,&quot;#3b82f6&quot;],&quot;tsType&quot;:&quot;string&quot;},&quot;upColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#22c98a&quot;,&quot;options&quot;:[&quot;#22c98a&quot;,&quot;#2dd4bf&quot;,&quot;#26a69a&quot;],&quot;tsType&quot;:&quot;string&quot;},&quot;downColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#f6465d&quot;,&quot;options&quot;:[&quot;#f6465d&quot;,&quot;#ef4444&quot;,&quot;#fb7185&quot;],&quot;tsType&quot;:&quot;string&quot;}}">
+class Component extends DCLogic {
+  state = { tf:'6M', viewN:132, ema:false, rsi:true, macd:true, vol:true, compare:true, log:false, preset:'50/200' };
+  cv = {};
+  readout = {};
+  hoverIdx = null;
+
+  constructor(props){ super(props); this.data = this.buildData(); }
+
+  hexA(h,a){ h=(h||'#a855f7').replace('#',''); if(h.length===3) h=h.split('').map(c=>c+c).join(''); const n=parseInt(h,16); return 'rgba('+((n>>16)&255)+','+((n>>8)&255)+','+(n&255)+','+a+')'; }
+
+  buildData(){
+    const N=700; let s=20260624>>>0;
+    const rnd=()=>{ s=(s*1664525+1013904223)>>>0; return s/4294967296; };
+    const bars=[]; let price=205;
+    for(let i=0;i<N;i++){
+      const t=i/N;
+      const drift=(-0.045 + 0.05*Math.sin(t*9.4) + 0.03*Math.sin(t*2.1))/100*price;
+      const vlt=price*0.017;
+      let close=price+drift+(rnd()-0.5)*vlt*2.1; close=Math.max(18,close);
+      const open=price+(rnd()-0.5)*vlt*0.7;
+      const high=Math.max(open,close)+rnd()*vlt;
+      const low=Math.min(open,close)-rnd()*vlt;
+      const v=(0.45+rnd()*1.0)*(close>=open?1.06:0.92)*8.5e7;
+      bars.push({o:open,h:high,l:low,c:close,v}); price=close;
+    }
+    let d=new Date(Date.UTC(2026,5,24)); const ds=[];
+    for(let k=0;k<N;k++){ ds.push(new Date(d.getTime())); do{ d.setUTCDate(d.getUTCDate()-1);}while(d.getUTCDay()===0||d.getUTCDay()===6); }
+    ds.reverse(); for(let i=0;i<N;i++) bars[i].d=ds[i];
+    let hp=100; const hs=[]; for(let i=0;i<N;i++){ hp=hp*(1+(rnd()-0.5)*0.018-0.00018); hs.push(hp); }
+    return {bars,hs,N};
+  }
+  sma(a,p){const o=new Array(a.length).fill(null);let sum=0;for(let i=0;i<a.length;i++){sum+=a[i];if(i>=p)sum-=a[i-p];if(i>=p-1)o[i]=sum/p;}return o;}
+  ema(a,p){const o=new Array(a.length).fill(null);const k=2/(p+1);let e=null;for(let i=0;i<a.length;i++){e=e==null?a[i]:a[i]*k+e*(1-k);if(i>=p-1)o[i]=e;}return o;}
+  rsiArr(a,p){const o=new Array(a.length).fill(null);let g=0,l=0;for(let i=1;i<a.length;i++){const ch=a[i]-a[i-1];const u=Math.max(0,ch),dn=Math.max(0,-ch);if(i<=p){g+=u;l+=dn;if(i===p){g/=p;l/=p;o[i]=100-100/(1+(l===0?100:g/l));}}else{g=(g*(p-1)+u)/p;l=(l*(p-1)+dn)/p;o[i]=100-100/(1+(l===0?100:g/l));}}return o;}
+  macdArr(a){const e12=this.ema(a,12),e26=this.ema(a,26);const m=a.map((_,i)=>e12[i]!=null&&e26[i]!=null?e12[i]-e26[i]:null);const valid=m.map(x=>x==null?0:x);const sg=this.ema(valid,9).map((x,i)=>m[i]==null?null:x);const hist=m.map((x,i)=>x!=null&&sg[i]!=null?x-sg[i]:null);return{m,sg,hist};}
+
+  fit(c){const r=c.getBoundingClientRect();const dpr=window.devicePixelRatio||1;c.width=Math.max(1,Math.round(r.width*dpr));c.height=Math.max(1,Math.round(r.height*dpr));const x=c.getContext('2d');x.setTransform(dpr,0,0,dpr,0,0);return{x,w:r.width,h:r.height};}
+  fmtVol(v){if(v>=1e9)return (v/1e9).toFixed(2)+'B';if(v>=1e6)return (v/1e6).toFixed(0)+'M';if(v>=1e3)return (v/1e3).toFixed(0)+'K';return ''+Math.round(v);}
+  fmtDate(d){return d.toISOString().slice(0,10);}
+  monthLabel(d){const m=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getUTCMonth()];return m+" '"+String(d.getUTCFullYear()).slice(2);}
+
+  scheduleDraw(){ if(this._raf) return; this._raf=setTimeout(()=>{ this._raf=null; try{ this.redrawAll(); }catch(e){ console.error(e); } this.drawOverlay(); this.updateReadout(this.hoverIdx); },16); }
+  componentDidMount(){ this.scheduleDraw(); this._onResize=()=>this.scheduleDraw(); window.addEventListener('resize',this._onResize); [60,200,500].forEach(t=>setTimeout(()=>this.scheduleDraw(),t)); if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>this.scheduleDraw()); }
+  componentDidUpdate(){ this.scheduleDraw(); }
+  componentWillUnmount(){ window.removeEventListener('resize',this._onResize); if(this._ro)this._ro.disconnect(); }
+
+  redrawAll(){
+    const cv=this.cv; const stack=cv.stackEl; if(!stack) return;
+    const rect=stack.getBoundingClientRect(); const W=rect.width; if(W<2) return;
+    this._up=this.props.upColor||'#22c98a'; this._dn=this.props.downColor||'#f6465d'; this._accent=this.props.accent||'#a855f7';
+    const {bars,hs,N}=this.data; const n=this.state.viewN; const start=Math.max(0,N-n);
+    const view=bars.slice(start);
+    const closes=bars.map(b=>b.c);
+    const parts=this.state.preset.split('/').map(Number); const fp=parts[0], sp=parts[1];
+    const maFn=this.state.ema?this.ema:this.sma;
+    const maF=maFn.call(this,closes,fp).slice(start);
+    const maS=maFn.call(this,closes,sp).slice(start);
+    const rsi=this.rsiArr(closes,14).slice(start);
+    const mc=this.macdArr(closes); const mM=mc.m.slice(start),mS=mc.sg.slice(start),mH=mc.hist.slice(start);
+    const hsV=hs.slice(start); const baseR=view.length?view[0].c/hsV[0]:1; const cmp=hsV.map(v=>v*baseR);
+    const padR=58; const m=view.length; const xStep=(W-padR)/Math.max(1,m);
+    this.geom={xStep,padR,n:m,W,start};
+    const monthIdx=[]; let pm=null; view.forEach((b,i)=>{const mm=b.d.getUTCMonth();if(mm!==pm){pm=mm;monthIdx.push(i);}});
+    const bw=Math.max(1,Math.min(13,xStep*0.62));
+    const bottom = this.state.macd?'macd':(this.state.rsi?'rsi':(this.state.vol?'vol':'price'));
+    const g={view,maF,maS,rsi,mM,mS,mH,cmp,xStep,padR,bw,monthIdx};
+    if(cv.price) this.drawPrice(cv.price,g,bottom==='price');
+    if(cv.volume&&this.state.vol) this.drawVolume(cv.volume,g,bottom==='vol');
+    if(cv.rsi&&this.state.rsi) this.drawRSI(cv.rsi,g,bottom==='rsi');
+    if(cv.macd&&this.state.macd) this.drawMACD(cv.macd,g,bottom==='macd');
+  }
+
+  vgrid(x,h,monthIdx,xStep){ x.strokeStyle='rgba(255,255,255,0.04)'; x.lineWidth=1; monthIdx.forEach(i=>{const cx=Math.round(i*xStep+xStep/2)+0.5; x.beginPath();x.moveTo(cx,0);x.lineTo(cx,h);x.stroke();}); }
+  dates(x,h,view,monthIdx,xStep){ x.fillStyle='#5a606b'; x.font='11px "JetBrains Mono", monospace'; x.textAlign='center'; x.textBaseline='alphabetic'; monthIdx.forEach(i=>{const cx=i*xStep+xStep/2; x.fillText(this.monthLabel(view[i].d),cx,h-7);}); }
+
+  drawPrice(c,g,showDates){
+    const {x,w,h}=this.fit(c); const padT=12,padB=showDates?24:10;
+    const {view,maF,maS,cmp,xStep,padR,bw,monthIdx}=g;
+    let lo=Infinity,hi=-Infinity; view.forEach(b=>{if(b.l<lo)lo=b.l;if(b.h>hi)hi=b.h;});
+    [maF,maS].forEach(a=>a.forEach(v=>{if(v!=null){if(v<lo)lo=v;if(v>hi)hi=v;}}));
+    if(this.state.compare) cmp.forEach(v=>{if(v<lo)lo=v;if(v>hi)hi=v;});
+    const lg=this.state.log; const tf=v=>lg?Math.log(v):v; const ylo=tf(lo),yhi=tf(hi); const pdf=(yhi-ylo)*0.06||1;
+    const A=ylo-pdf,B=yhi+pdf; const Y=v=>padT+(1-(tf(v)-A)/(B-A))*(h-padT-padB);
+    x.clearRect(0,0,w,h);
+    for(let k=0;k<=5;k++){ const v=lo+(hi-lo)*k/5; const yy=Math.round(Y(v))+0.5; x.strokeStyle='rgba(255,255,255,0.045)';x.lineWidth=1;x.beginPath();x.moveTo(0,yy);x.lineTo(w-padR,yy);x.stroke(); x.fillStyle='#6a707a';x.font='11px "JetBrains Mono", monospace';x.textAlign='left';x.textBaseline='middle';x.fillText(v.toFixed(0),w-padR+8,Y(v)); }
+    this.vgrid(x,h,monthIdx,xStep);
+    view.forEach((b,i)=>{const cx=i*xStep+xStep/2;const up=b.c>=b.o;const col=up?this._up:this._dn;x.strokeStyle=col;x.fillStyle=col;x.lineWidth=1;x.beginPath();x.moveTo(Math.round(cx)+0.5,Y(b.h));x.lineTo(Math.round(cx)+0.5,Y(b.l));x.stroke();const yo=Y(b.o),yc=Y(b.c);let top=Math.min(yo,yc),hh=Math.abs(yc-yo);if(hh<1.2)hh=1.2;x.fillRect(cx-bw/2,top,bw,hh);});
+    const line=(arr,color,wd)=>{x.strokeStyle=color;x.lineWidth=wd;x.beginPath();let st=false;arr.forEach((v,i)=>{if(v==null){st=false;return;}const cx=i*xStep+xStep/2,yy=Y(v);if(!st){x.moveTo(cx,yy);st=true;}else x.lineTo(cx,yy);});x.stroke();};
+    line(maS,'#f3a13a',1.5); line(maF,'#4f8cff',1.5);
+    if(this.state.compare) line(cmp,'#22d3ee',1.4);
+    let lastCx=null,lastCy=null;
+    for(let i=1;i<view.length;i++){ if(maF[i]==null||maS[i]==null||maF[i-1]==null||maS[i-1]==null)continue; const pr=maF[i-1]-maS[i-1],cu=maF[i]-maS[i]; const cx=i*xStep+xStep/2; if(pr<=0&&cu>0){this.tri(x,cx,Y(view[i].l)+15,true,this._up);lastCx=cx;lastCy=Y(view[i].l)+15;} else if(pr>=0&&cu<0){this.tri(x,cx,Y(view[i].h)-15,false,this._dn);lastCx=cx;lastCy=Y(view[i].h)-15;} }
+    if(lastCx!=null){x.strokeStyle='rgba(234,179,8,0.9)';x.lineWidth=1.5;x.beginPath();x.arc(lastCx,lastCy,12,0,Math.PI*2);x.stroke();}
+    if(showDates) this.dates(x,h,view,monthIdx,xStep);
+  }
+  tri(x,cx,cy,up,color){const s=6;x.fillStyle=color;x.beginPath();if(up){x.moveTo(cx,cy-s);x.lineTo(cx-s,cy+s);x.lineTo(cx+s,cy+s);}else{x.moveTo(cx,cy+s);x.lineTo(cx-s,cy-s);x.lineTo(cx+s,cy-s);}x.closePath();x.fill();}
+
+  drawVolume(c,g,showDates){const {x,w,h}=this.fit(c);const padT=10,padB=showDates?22:8;const {view,xStep,padR,bw,monthIdx}=g;x.clearRect(0,0,w,h);this.vgrid(x,h,monthIdx,xStep);let mv=0;view.forEach(b=>{if(b.v>mv)mv=b.v;});view.forEach((b,i)=>{const cx=i*xStep+xStep/2;const up=b.c>=b.o;x.fillStyle=up?this.hexA(this._up,0.5):this.hexA(this._dn,0.45);const bh=(b.v/mv)*(h-padT-padB);x.fillRect(cx-bw/2,h-padB-bh,bw,bh);});x.fillStyle='#6a707a';x.font='11px "JetBrains Mono", monospace';x.textAlign='left';x.textBaseline='top';x.fillText(this.fmtVol(mv),w-padR+8,padT);x.textBaseline='bottom';x.fillText('0',w-padR+8,h-padB);if(showDates)this.dates(x,h,view,monthIdx,xStep);}
+
+  drawRSI(c,g,showDates){const {x,w,h}=this.fit(c);const padT=10,padB=showDates?22:8;const {rsi,xStep,padR,monthIdx,view}=g;const Y=v=>padT+(1-v/100)*(h-padT-padB);x.clearRect(0,0,w,h);this.vgrid(x,h,monthIdx,xStep);x.fillStyle='rgba(255,255,255,0.028)';x.fillRect(0,Y(70),w-padR,Y(30)-Y(70));[30,70].forEach(v=>{x.strokeStyle='rgba(255,255,255,0.12)';x.setLineDash([4,4]);x.lineWidth=1;x.beginPath();x.moveTo(0,Y(v)+0.5);x.lineTo(w-padR,Y(v)+0.5);x.stroke();x.setLineDash([]);x.fillStyle='#6a707a';x.font='11px "JetBrains Mono", monospace';x.textAlign='left';x.textBaseline='middle';x.fillText(''+v,w-padR+8,Y(v));});x.strokeStyle=this._accent;x.lineWidth=1.5;x.beginPath();let st=false;rsi.forEach((v,i)=>{if(v==null){st=false;return;}const cx=i*xStep+xStep/2,yy=Y(v);if(!st){x.moveTo(cx,yy);st=true;}else x.lineTo(cx,yy);});x.stroke();if(showDates)this.dates(x,h,view,monthIdx,xStep);}
+
+  drawMACD(c,g,showDates){const {x,w,h}=this.fit(c);const padT=12,padB=showDates?22:8;const {mM,mS,mH,xStep,padR,bw,monthIdx,view}=g;let mx=1e-6;[].concat(mM,mS,mH).forEach(v=>{if(v!=null&&Math.abs(v)>mx)mx=Math.abs(v);});mx*=1.15;const Y=v=>padT+(1-(v+mx)/(2*mx))*(h-padT-padB);x.clearRect(0,0,w,h);this.vgrid(x,h,monthIdx,xStep);x.strokeStyle='rgba(255,255,255,0.1)';x.lineWidth=1;x.beginPath();x.moveTo(0,Y(0)+0.5);x.lineTo(w-padR,Y(0)+0.5);x.stroke();mH.forEach((v,i)=>{if(v==null)return;const cx=i*xStep+xStep/2;x.fillStyle=v>=0?this.hexA(this._up,0.55):this.hexA(this._dn,0.5);const y0=Y(0),y1=Y(v);x.fillRect(cx-bw/2,Math.min(y0,y1),bw,Math.abs(y1-y0)||1);});const line=(arr,color)=>{x.strokeStyle=color;x.lineWidth=1.4;x.beginPath();let st=false;arr.forEach((v,i)=>{if(v==null){st=false;return;}const cx=i*xStep+xStep/2,yy=Y(v);if(!st){x.moveTo(cx,yy);st=true;}else x.lineTo(cx,yy);});x.stroke();};line(mM,'#4f8cff');line(mS,'#f3a13a');x.fillStyle='#6a707a';x.font='11px "JetBrains Mono", monospace';x.textAlign='left';x.textBaseline='top';x.fillText(mx.toFixed(1),w-padR+8,padT);x.textBaseline='bottom';x.fillText((-mx).toFixed(1),w-padR+8,h-padB);if(showDates)this.dates(x,h,view,monthIdx,xStep);}
+
+  drawOverlay(){const c=this.cv.overlay;if(!c||!this.geom)return;const {x,w,h}=this.fit(c);x.clearRect(0,0,w,h);const idx=this.hoverIdx;if(idx==null)return;const {xStep}=this.geom;const cx=idx*xStep+xStep/2;x.strokeStyle=this.hexA(this.props.accent||'#a855f7',0.75);x.setLineDash([5,4]);x.lineWidth=1;x.beginPath();x.moveTo(Math.round(cx)+0.5,0);x.lineTo(Math.round(cx)+0.5,h);x.stroke();x.setLineDash([]);}
+
+  updateReadout(idx){const r=this.readout;if(!r.date)return;const N=this.data.N,n=this.state.viewN,start=Math.max(0,N-n);const i= idx==null?(n-1):Math.min(idx,n-1);const b=this.data.bars[start+i];if(!b)return;const pb=this.data.bars[start+i-1]||b;const chg=b.c-pb.c;const pct=pb.c?chg/pb.c*100:0;const up=chg>=0;const UP=this.props.upColor||'#22c98a',DN=this.props.downColor||'#f6465d';r.date.textContent=this.fmtDate(b.d);r.o.textContent=b.o.toFixed(2);r.h.textContent=b.h.toFixed(2);r.l.textContent=b.l.toFixed(2);r.c.textContent=b.c.toFixed(2);r.chg.textContent=(up?'+':'')+chg.toFixed(2)+'  ('+(up?'+':'')+pct.toFixed(2)+'%)';r.chg.style.color=up?UP:DN;if(r.arrow){r.arrow.textContent=up?'▲':'▼';r.arrow.style.color=up?UP:DN;}}
+
+  onMove=(e)=>{const stack=this.cv.stackEl;if(!stack||!this.geom)return;const rect=stack.getBoundingClientRect();const xpos=e.clientX-rect.left;let idx=Math.floor(xpos/this.geom.xStep);idx=Math.max(0,Math.min(this.geom.n-1,idx));this.hoverIdx=idx;this.drawOverlay();this.updateReadout(idx);};
+  onLeave=()=>{this.hoverIdx=null;this.drawOverlay();this.updateReadout(null);};
+
+  refStack=(el)=>{this.cv.stackEl=el;if(el){if(!this._ro){this._ro=new ResizeObserver(()=>this.scheduleDraw());this._ro.observe(el);}[0,80,250,600].forEach(t=>setTimeout(()=>this.scheduleDraw(),t));}};
+  refPrice=(el)=>{this.cv.price=el;};
+  refVolume=(el)=>{this.cv.volume=el;};
+  refRsi=(el)=>{this.cv.rsi=el;};
+  refMacd=(el)=>{this.cv.macd=el;};
+  refOverlay=(el)=>{this.cv.overlay=el;};
+  rDate=(el)=>{this.readout.date=el;};
+  rO=(el)=>{this.readout.o=el;};
+  rH=(el)=>{this.readout.h=el;};
+  rL=(el)=>{this.readout.l=el;};
+  rC=(el)=>{this.readout.c=el;};
+  rChg=(el)=>{this.readout.chg=el;};
+  rArrow=(el)=>{this.readout.arrow=el;};
+
+  setTf=(k)=>{const map={'1M':22,'3M':66,'6M':132,'1Y':252,'5Y':500,'MAX':700};this.setState({tf:k,viewN:map[k]});};
+  toggle=(k)=>{this.setState(s=>({[k]:!s[k]}));};
+  setPreset=(p)=>{this.setState({preset:p});};
+  zoomIn=()=>{this.setState(s=>({viewN:Math.max(20,Math.round(s.viewN*0.75)),tf:''}));};
+  zoomOut=()=>{this.setState(s=>({viewN:Math.min(700,Math.round(s.viewN*1.3)),tf:''}));};
+  reset=()=>{this.setState({viewN:132,tf:'6M'});};
+
+  renderVals(){
+    const s=this.state; const bars=this.data.bars; const N=this.data.N;
+    const last=bars[N-1],prev=bars[N-2]||last; const chg=last.c-prev.c; const pct=prev.c?chg/prev.c*100:0; const up=chg>=0;
+    const parts=s.preset.split('/').map(Number); const fp=parts[0],sp=parts[1]; const maName=s.ema?'EMA':'SMA';
+    const accent=this.props.accent||'#a855f7'; const UP=this.props.upColor||'#22c98a', DN=this.props.downColor||'#f6465d';
+    const seg=(a)=>({padding:'7px 13px',fontSize:'12px',fontFamily:'"JetBrains Mono", monospace',fontWeight:500,color:a?accent:'#888e98',background:a?this.hexA(accent,0.16):'transparent',border:'none',borderRadius:'7px',cursor:'pointer',transition:'all .12s',whiteSpace:'nowrap'});
+    const tfList=['1M','3M','6M','1Y','5Y','MAX'].map(k=>({key:k,label:k,style:seg(k===s.tf),onClick:()=>this.setTf(k)}));
+    const presetList=['9/21','20/50','50/200','100/200'].map(k=>({key:k,label:k,style:Object.assign(seg(k===s.preset),{flex:'1',textAlign:'center',padding:'7px 4px'}),onClick:()=>this.setPreset(k)}));
+    const chipStyle=(on)=>({display:'inline-flex',alignItems:'center',gap:'7px',padding:'8px 13px',fontSize:'12px',fontWeight:600,fontFamily:'Manrope, sans-serif',color:on?accent:'#9aa0a8',background:on?this.hexA(accent,0.13):'#0d0d11',border:'1px solid '+(on?this.hexA(accent,0.4):'rgba(255,255,255,0.07)'),borderRadius:'9px',cursor:'pointer',transition:'all .12s'});
+    const dot=(on)=>({width:'7px',height:'7px',borderRadius:'50%',background:on?accent:'#3a3a44',flex:'0 0 auto'});
+    const chips=[['ema','EMA'],['rsi','RSI'],['macd','MACD']].map(p=>({key:p[0],label:p[1],style:chipStyle(s[p[0]]),dot:dot(s[p[0]]),onClick:()=>this.toggle(p[0])}));
+    const mkSwitch=(k,label)=>{const on=s[k];return{key:k,label,on,track:{width:'38px',height:'22px',borderRadius:'999px',border:'1px solid '+(on?this.hexA(accent,0.6):'rgba(255,255,255,0.12)'),background:on?accent:'#15151a',position:'relative',cursor:'pointer',transition:'all .15s',padding:'0',flex:'0 0 auto'},knob:{position:'absolute',top:'2px',left:'2px',width:'16px',height:'16px',borderRadius:'50%',background:'#fff',transition:'transform .15s',transform:on?'translateX(16px)':'translateX(0)',boxShadow:'0 1px 2px rgba(0,0,0,0.4)'},onClick:()=>this.toggle(k)};};
+    const panelSwitches=[mkSwitch('rsi','RSI (14)'),mkSwitch('macd','MACD (12,26,9)'),mkSwitch('vol','Volume')];
+    const legend=[{label:maName+' '+fp,color:'#4f8cff',glyph:'\u2014'},{label:maName+' '+sp,color:'#f3a13a',glyph:'\u2014'},{label:'Golden cross',color:UP,glyph:'\u25B2'},{label:'Death cross',color:DN,glyph:'\u25BC'},{label:'Hang Seng (rebased)',color:'#22d3ee',glyph:'\u2014'}].map(it=>({label:it.label,glyph:it.glyph,gstyle:{color:it.color,fontFamily:'"JetBrains Mono", monospace',fontSize:'13px',width:'16px',textAlign:'center',flex:'0 0 auto'}}));
+    return {
+      refStack:this.refStack,refPrice:this.refPrice,refVolume:this.refVolume,refRsi:this.refRsi,refMacd:this.refMacd,refOverlay:this.refOverlay,
+      rDate:this.rDate,rO:this.rO,rH:this.rH,rL:this.rL,rC:this.rC,rChg:this.rChg,rArrow:this.rArrow,
+      onMove:this.onMove,onLeave:this.onLeave,
+      tfList,presetList,chips,panelSwitches,
+      emaSw:mkSwitch('ema','Exponential (EMA)'),logSw:mkSwitch('log','Logarithmic y-axis'),cmpSw:mkSwitch('compare','Show comparison'),
+      legend,
+      comparePill:Object.assign(chipStyle(s.compare),{gap:'6px'}),
+      zoomIn:this.zoomIn,zoomOut:this.zoomOut,reset:this.reset,
+      showRsi:s.rsi,showMacd:s.macd,showVol:s.vol,
+      quoteClose:last.c.toFixed(2),
+      quoteChg:(up?'+':'')+chg.toFixed(2)+'  ('+(up?'+':'')+pct.toFixed(2)+'%)',
+      quoteArrow:up?'\u25B2':'\u25BC',
+      quotePill:{display:'inline-flex',alignItems:'center',gap:'6px',padding:'4px 10px',borderRadius:'7px',fontSize:'13px',fontWeight:600,fontFamily:'"JetBrains Mono", monospace',color:up?UP:DN,background:this.hexA(up?UP:DN,0.12)},
+      fastP:''+fp,slowP:''+sp,
+    };
+  }
+}
+</script>
+
+
+</body></html>
