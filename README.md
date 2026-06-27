@@ -1,5 +1,7 @@
 # StockGraber
 
+**English** | [繁體中文](README.zh-Hant.md)
+
 A desktop stock-charting app built with [finplot](https://github.com/highfestiva/finplot)
 embedded in a [PySide6](https://doc.qt.io/qtforpython/) (Qt) window, styled as a
 dark "trading terminal". It pulls real daily OHLC data from Yahoo Finance (via
