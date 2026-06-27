@@ -131,6 +131,74 @@ QHeaderView::section {{
 """
 
 
+# ---- translations: English / Traditional Chinese ---------------------------
+TR = {
+    "load": {"en": "Load", "zh": "載入"},
+    "find": {"en": "🔍 Find", "zh": "🔍 搜尋"},
+    "find_tip": {"en": "Find a stock code by company name",
+                 "zh": "以公司名稱搜尋股票代碼"},
+    "reset": {"en": "Reset", "zh": "重設"},
+    "exit": {"en": "✕  Exit", "zh": "✕  退出"},
+    "exit_tip": {"en": "Exit StockGraber (Esc)", "zh": "退出 StockGraber（Esc）"},
+    "off": {"en": "Off", "zh": "關閉"},
+    "none": {"en": "None", "zh": "無"},
+    "lang_btn": {"en": "中文", "zh": "EN"},          # shows the language to switch TO
+    "lang_tip": {"en": "Switch language (English / 繁體中文)",
+                 "zh": "切換語言（English / 繁體中文）"},
+    # sidebar card titles (English shown upper-case to match the design)
+    "ma_crossover": {"en": "MA CROSSOVER", "zh": "移動平均交叉"},
+    "comparison": {"en": "COMPARISON", "zh": "比較"},
+    "legend": {"en": "LEGEND", "zh": "圖例"},
+    "date_range": {"en": "DATE RANGE", "zh": "日期範圍"},
+    "panels": {"en": "PANELS", "zh": "面板"},
+    "fast": {"en": "FAST", "zh": "快線"},
+    "slow": {"en": "SLOW", "zh": "慢線"},
+    "ema": {"en": "Exponential (EMA)", "zh": "指數平均 (EMA)"},
+    "volume": {"en": "Volume", "zh": "成交量"},
+    "rsi": {"en": "RSI (14)", "zh": "RSI (14)"},
+    "macd": {"en": "MACD (12,26,9)", "zh": "MACD (12,26,9)"},
+    "line_chart": {"en": "Line chart", "zh": "線圖"},
+    "log_scale": {"en": "Log scale", "zh": "對數刻度"},
+    "from": {"en": "FROM", "zh": "由"},
+    "to": {"en": "TO", "zh": "至"},
+    "daily_close": {"en": "Daily close", "zh": "每日收市價"},
+    "golden_cross": {"en": "Golden cross", "zh": "黃金交叉"},
+    "death_cross": {"en": "Death cross", "zh": "死亡交叉"},
+    "rebased": {"en": "rebased", "zh": "重新基準"},
+    # symbol-search dialog
+    "find_title": {"en": "Find a stock code", "zh": "搜尋股票代碼"},
+    "find_ph": {"en": "Company name or ticker — e.g. apple, tencent, hsbc",
+                "zh": "公司名稱或代碼 — 例如 apple、tencent、hsbc"},
+    "search": {"en": "Search", "zh": "搜尋"},
+    "col_code": {"en": "Code", "zh": "代碼"},
+    "col_name": {"en": "Name", "zh": "名稱"},
+    "col_exch": {"en": "Exchange", "zh": "交易所"},
+    "col_type": {"en": "Type", "zh": "類型"},
+    "use_in_chart": {"en": "Use in chart", "zh": "套用至圖表"},
+    "copy_code": {"en": "Copy code", "zh": "複製代碼"},
+    "close": {"en": "Close", "zh": "關閉"},
+    "find_hint": {"en": "Type a name or ticker and press Search.",
+                  "zh": "輸入名稱或代碼後按搜尋。"},
+    "searching": {"en": "Searching…", "zh": "搜尋中…"},
+    "results_n": {"en": "{n} result(s) — double-click a row or 'Use in chart'.",
+                  "zh": "{n} 個結果 — 雙擊一列或按「套用至圖表」。"},
+    "no_match": {"en": "No matches.", "zh": "沒有符合的結果。"},
+    # in-chart sub-panel label
+    "vol_lbl": {"en": "Volume", "zh": "成交量"},
+    # pop-up warnings
+    "load_failed": {"en": "Load failed", "zh": "載入失敗"},
+    "index_failed": {"en": "Index load failed", "zh": "指數載入失敗"},
+    "invalid_range": {"en": "Invalid range", "zh": "日期範圍無效"},
+    "invalid_range_msg": {"en": "The 'To' date is before the 'From' date.",
+                          "zh": "「至」日期早於「由」日期。"},
+}
+
+
+def tr(key, lang):
+    e = TR.get(key, {})
+    return e.get(lang, e.get("en", key))
+
+
 class ToggleSwitch(QtWidgets.QCheckBox):
     """A pill toggle (iOS-style) that behaves like a QCheckBox."""
 
@@ -232,8 +300,9 @@ class SymbolSearchDialog(QtWidgets.QDialog):
     def __init__(self, parent, on_pick):
         super().__init__(parent)
         self._on_pick = on_pick
+        self._t = parent.t                # main window's translator
         self._worker = None
-        self.setWindowTitle("Find a stock code")
+        self.setWindowTitle(self._t("find_title"))
         self.setMinimumSize(580, 480)
 
         v = QtWidgets.QVBoxLayout(self)
@@ -242,17 +311,19 @@ class SymbolSearchDialog(QtWidgets.QDialog):
 
         row = QtWidgets.QHBoxLayout()
         self.q = QtWidgets.QLineEdit()
-        self.q.setPlaceholderText("Company name or ticker — e.g. apple, tencent, hsbc")
+        self.q.setPlaceholderText(self._t("find_ph"))
         self.q.returnPressed.connect(self._search)
         row.addWidget(self.q)
-        self.search_btn = QtWidgets.QPushButton("Search")
+        self.search_btn = QtWidgets.QPushButton(self._t("search"))
         self.search_btn.setObjectName("load")
         self.search_btn.clicked.connect(self._search)
         row.addWidget(self.search_btn)
         v.addLayout(row)
 
         self.table = QtWidgets.QTableWidget(0, 4)
-        self.table.setHorizontalHeaderLabels(["Code", "Name", "Exchange", "Type"])
+        self.table.setHorizontalHeaderLabels(
+            [self._t("col_code"), self._t("col_name"),
+             self._t("col_exch"), self._t("col_type")])
         self.table.verticalHeader().setVisible(False)
         self.table.setSelectionBehavior(
             QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
@@ -267,18 +338,18 @@ class SymbolSearchDialog(QtWidgets.QDialog):
         self.table.cellDoubleClicked.connect(lambda *_a: self._use())
         v.addWidget(self.table, 1)
 
-        self.status = QtWidgets.QLabel("Type a name or ticker and press Search.")
+        self.status = QtWidgets.QLabel(self._t("find_hint"))
         self.status.setStyleSheet(f"color:{MUT}; font-size:12px;")
         v.addWidget(self.status)
 
         btns = QtWidgets.QHBoxLayout()
-        self.copy_btn = QtWidgets.QPushButton("Copy code")
+        self.copy_btn = QtWidgets.QPushButton(self._t("copy_code"))
         self.copy_btn.setObjectName("tool")
         self.copy_btn.clicked.connect(self._copy)
-        close_btn = QtWidgets.QPushButton("Close")
+        close_btn = QtWidgets.QPushButton(self._t("close"))
         close_btn.setObjectName("tool")
         close_btn.clicked.connect(self.close)
-        self.use_btn = QtWidgets.QPushButton("Use in chart")
+        self.use_btn = QtWidgets.QPushButton(self._t("use_in_chart"))
         self.use_btn.setObjectName("load")
         self.use_btn.clicked.connect(self._use)
         btns.addWidget(self.copy_btn)
@@ -291,7 +362,7 @@ class SymbolSearchDialog(QtWidgets.QDialog):
         q = self.q.text().strip()
         if not q or (self._worker is not None and self._worker.isRunning()):
             return
-        self.status.setText("Searching…")
+        self.status.setText(self._t("searching"))
         self.search_btn.setEnabled(False)
         self._worker = _SearchWorker(q, self)
         self._worker.done.connect(self._on_done)
@@ -309,10 +380,9 @@ class SymbolSearchDialog(QtWidgets.QDialog):
                                    QtWidgets.QTableWidgetItem(str(r.get(key, ""))))
         if results:
             self.table.selectRow(0)
-            self.status.setText(
-                f"{len(results)} result(s) — double-click a row or 'Use in chart'.")
+            self.status.setText(self._t("results_n").format(n=len(results)))
         else:
-            self.status.setText("No matches.")
+            self.status.setText(self._t("no_match"))
 
     def _on_failed(self, _q, message):
         self.status.setText("Search failed: " + message)
@@ -389,6 +459,8 @@ class SpikeWindow(QtWidgets.QMainWindow):
         self._compare_fetcher = None
         self._fast, self._slow = self.MA_PRESETS[self.DEFAULT_PRESET][1:3]
         self._tf = self.TIMEFRAMES[self.DEFAULT_TF][1]
+        self._lang = "en"
+        self._i18n = []                  # (widget, key, kind) for retranslation
 
         central = QtWidgets.QWidget()
         central.setObjectName("central")
@@ -444,11 +516,16 @@ class SpikeWindow(QtWidgets.QMainWindow):
         self.hdr_symbol.setObjectName("hsym")
         h.addWidget(self.hdr_symbol)
         h.addStretch(1)
-        self.exit_btn = QtWidgets.QPushButton("✕  Exit")
+        self.lang_btn = self._tool_btn("中文", self._toggle_lang)
+        self._reg(self.lang_btn, "lang_btn")
+        self._reg(self.lang_btn, "lang_tip", "tip")
+        h.addWidget(self.lang_btn)
+        self.exit_btn = QtWidgets.QPushButton()
         self.exit_btn.setObjectName("exit")
         self.exit_btn.setCursor(QtCore.Qt.CursorShape.PointingHandCursor)
-        self.exit_btn.setToolTip("Exit StockGraber (Esc)")
         self.exit_btn.clicked.connect(self.close)
+        self._reg(self.exit_btn, "exit")
+        self._reg(self.exit_btn, "exit_tip", "tip")
         h.addWidget(self.exit_btn)
         return f
 
@@ -463,12 +540,14 @@ class SpikeWindow(QtWidgets.QMainWindow):
         self.symbol_input.setFixedWidth(120)
         self.symbol_input.returnPressed.connect(self.load_symbol)
         h.addWidget(self.symbol_input)
-        self.load_button = QtWidgets.QPushButton("Load")
+        self.load_button = QtWidgets.QPushButton()
         self.load_button.setObjectName("load")
         self.load_button.clicked.connect(lambda: self.load_symbol())
+        self._reg(self.load_button, "load")
         h.addWidget(self.load_button)
         self.find_btn = self._tool_btn("🔍 Find", self._open_search)
-        self.find_btn.setToolTip("Find a stock code by company name")
+        self._reg(self.find_btn, "find")
+        self._reg(self.find_btn, "find_tip", "tip")
         h.addWidget(self.find_btn)
 
         h.addWidget(self._sep())
@@ -498,6 +577,7 @@ class SpikeWindow(QtWidgets.QMainWindow):
         self.zoom_out_btn = self._tool_btn("−", lambda: self._zoom_x(1.25), w=34)
         self.zoom_in_btn = self._tool_btn("+", lambda: self._zoom_x(0.8), w=34)
         self.zoom_reset_btn = self._tool_btn("Reset", self._reset_zoom)
+        self._reg(self.zoom_reset_btn, "reset")
         h.addWidget(self.zoom_out_btn)
         h.addWidget(self.zoom_in_btn)
         h.addWidget(self.zoom_reset_btn)
@@ -583,14 +663,15 @@ class SpikeWindow(QtWidgets.QMainWindow):
         prow.addStretch(1)
         v.addLayout(prow)
 
-        sub = QtWidgets.QLabel("USD · Daily close")
+        sub = QtWidgets.QLabel()
         sub.setStyleSheet(f"color:{DIM}; font-size:11px; "
                           "font-family:'JetBrains Mono','Consolas',monospace;")
+        self._reg(sub, "daily_close")
         v.addWidget(sub)
         return card
 
     def _build_indicators_card(self):
-        card, v = _card("MA Crossover")
+        card, v = self._card_t("ma_crossover")
         # preset segmented control
         seg = QtWidgets.QFrame()
         seg.setObjectName("segwrap")
@@ -613,40 +694,41 @@ class SpikeWindow(QtWidgets.QMainWindow):
         # Fast / Slow value tiles
         tiles = QtWidgets.QHBoxLayout()
         tiles.setSpacing(10)
-        self.fast_tile = self._value_tile("Fast", str(self._fast), MA_FAST)
-        self.slow_tile = self._value_tile("Slow", str(self._slow), MA_SLOW)
+        self.fast_tile = self._value_tile("fast", str(self._fast), MA_FAST)
+        self.slow_tile = self._value_tile("slow", str(self._slow), MA_SLOW)
         tiles.addWidget(self.fast_tile[0])
         tiles.addWidget(self.slow_tile[0])
         v.addLayout(tiles)
 
         self.ema_checkbox = ToggleSwitch(False)
         self.ema_checkbox.toggled.connect(self._on_ma_changed)
-        v.addLayout(_switch_row("Exponential (EMA)", self.ema_checkbox))
+        v.addLayout(self._switch_row_t("ema", self.ema_checkbox))
 
         v.addWidget(self._hline())
-        ptitle = QtWidgets.QLabel("PANELS")
+        ptitle = QtWidgets.QLabel()
         ptitle.setObjectName("cardtitle")
+        self._reg(ptitle, "panels")
         v.addWidget(ptitle)
         self.vol_checkbox = ToggleSwitch(True)
         self.rsi_checkbox = ToggleSwitch(True)
         self.macd_checkbox = ToggleSwitch(True)
-        v.addLayout(_switch_row("Volume", self.vol_checkbox))
-        v.addLayout(_switch_row("RSI (14)", self.rsi_checkbox))
-        v.addLayout(_switch_row("MACD (12,26,9)", self.macd_checkbox))
+        v.addLayout(self._switch_row_t("volume", self.vol_checkbox))
+        v.addLayout(self._switch_row_t("rsi", self.rsi_checkbox))
+        v.addLayout(self._switch_row_t("macd", self.macd_checkbox))
 
         v.addWidget(self._hline())
         self.line_checkbox = ToggleSwitch(False)   # off = candles, on = line
         self.line_checkbox.toggled.connect(self._on_chart_type_changed)
-        v.addLayout(_switch_row("Line chart", self.line_checkbox))
+        v.addLayout(self._switch_row_t("line_chart", self.line_checkbox))
         self.log_checkbox = ToggleSwitch(False)
         self.log_checkbox.toggled.connect(self.toggle_log)
-        v.addLayout(_switch_row("Log scale", self.log_checkbox))
+        v.addLayout(self._switch_row_t("log_scale", self.log_checkbox))
         return card
 
     def _build_comparison_card(self):
-        card, v = _card("Comparison")
+        card, v = self._card_t("comparison")
         self.compare_combo = QtWidgets.QComboBox()
-        self.compare_combo.addItem("None", None)
+        self.compare_combo.addItem(self.t("none"), None)
         for market, items in self.COMPARE_INDICES:
             self.compare_combo.insertSeparator(self.compare_combo.count())
             self.compare_combo.addItem(f"— {market} —", None)
@@ -657,6 +739,7 @@ class SpikeWindow(QtWidgets.QMainWindow):
         self.compare_combo.currentIndexChanged.connect(self._on_compare_changed)
         v.addWidget(self.compare_combo)
         self.compare_off_btn = self._tool_btn("Off", self._disable_compare)
+        self._reg(self.compare_off_btn, "off")
         row = QtWidgets.QHBoxLayout()
         row.addStretch(1)
         row.addWidget(self.compare_off_btn)
@@ -664,20 +747,21 @@ class SpikeWindow(QtWidgets.QMainWindow):
         return card
 
     def _build_legend_card(self):
-        card, v = _card("Legend")
+        card, v = self._card_t("legend")
         self.legend_label = QtWidgets.QLabel("")
         self.legend_label.setTextFormat(QtCore.Qt.TextFormat.RichText)
         v.addWidget(self.legend_label)
         return card
 
     def _build_range_card(self):
-        card, v = _card("Date Range")
+        card, v = self._card_t("date_range")
         row = QtWidgets.QHBoxLayout()
         row.setSpacing(10)
         fcol = QtWidgets.QVBoxLayout()
         fcol.setSpacing(5)
-        fl = QtWidgets.QLabel("FROM")
+        fl = QtWidgets.QLabel()
         fl.setStyleSheet(f"color:{MUT2}; font-size:10px;")
+        self._reg(fl, "from")
         self.start_date = QtWidgets.QDateEdit(QtCore.QDate(2015, 1, 1))
         self.start_date.setCalendarPopup(True)
         self.start_date.setDisplayFormat("yyyy-MM-dd")
@@ -686,8 +770,9 @@ class SpikeWindow(QtWidgets.QMainWindow):
         fcol.addWidget(self.start_date)
         tcol = QtWidgets.QVBoxLayout()
         tcol.setSpacing(5)
-        tl = QtWidgets.QLabel("TO")
+        tl = QtWidgets.QLabel()
         tl.setStyleSheet(f"color:{MUT2}; font-size:10px;")
+        self._reg(tl, "to")
         self.end_date = QtWidgets.QDateEdit(QtCore.QDate.currentDate())
         self.end_date.setCalendarPopup(True)
         self.end_date.setDisplayFormat("yyyy-MM-dd")
@@ -704,7 +789,7 @@ class SpikeWindow(QtWidgets.QMainWindow):
         # static sub-panel decorations + labels (match the design)
         fplt.set_y_range(0, 100, ax=self.ax_rsi)
         fplt.add_horizontal_band(30, 70, color="#787b8622", ax=self.ax_rsi)
-        fplt.add_legend("Volume", ax=self.ax_vol)
+        self._vol_label = fplt.add_legend(self.t("vol_lbl"), ax=self.ax_vol)
         fplt.add_legend(f"RSI · {self.RSI_PERIOD}", ax=self.ax_rsi)
         fplt.add_legend(
             f"MACD · {self.MACD_FAST},{self.MACD_SLOW},{self.MACD_SIGNAL}",
@@ -770,20 +855,78 @@ class SpikeWindow(QtWidgets.QMainWindow):
         b.clicked.connect(slot)
         return b
 
-    def _value_tile(self, label, value, color):
+    def _value_tile(self, cap_key, value, color):
         f = QtWidgets.QFrame()
         f.setObjectName("tile")
         v = QtWidgets.QVBoxLayout(f)
         v.setContentsMargins(11, 9, 11, 9)
         v.setSpacing(2)
-        cap = QtWidgets.QLabel(label.upper())
+        cap = QtWidgets.QLabel()
         cap.setStyleSheet(f"color:{MUT2}; font-size:10px;")
+        self._reg(cap, cap_key)
         val = QtWidgets.QLabel(value)
         val.setStyleSheet(f"color:{color}; font-family:'JetBrains Mono','Consolas',"
                           "monospace; font-size:16px; font-weight:600;")
         v.addWidget(cap)
         v.addWidget(val)
         return f, val
+
+    # ---- i18n (English / Traditional Chinese) ----------------------------
+
+    def t(self, key):
+        return tr(key, self._lang)
+
+    def _reg(self, widget, key, kind="text"):
+        """Register a widget's translatable string and apply it now."""
+        self._i18n.append((widget, key, kind))
+        self._apply_tr(widget, key, kind)
+
+    def _apply_tr(self, widget, key, kind):
+        txt = self.t(key)
+        if kind == "text":
+            widget.setText(txt)
+        elif kind == "tip":
+            widget.setToolTip(txt)
+        elif kind == "place":
+            widget.setPlaceholderText(txt)
+
+    def _card_t(self, title_key):
+        """A sidebar card whose title is translatable."""
+        card = QtWidgets.QFrame()
+        card.setObjectName("card")
+        v = QtWidgets.QVBoxLayout(card)
+        v.setContentsMargins(16, 14, 16, 14)
+        v.setSpacing(10)
+        title = QtWidgets.QLabel()
+        title.setObjectName("cardtitle")
+        self._reg(title, title_key)
+        v.addWidget(title)
+        return card, v
+
+    def _switch_row_t(self, key, toggle):
+        row = QtWidgets.QHBoxLayout()
+        lbl = QtWidgets.QLabel()
+        lbl.setStyleSheet(f"color:{TXT2}; font-size:13px;")
+        self._reg(lbl, key)
+        row.addWidget(lbl)
+        row.addStretch(1)
+        row.addWidget(toggle)
+        return row
+
+    def _toggle_lang(self):
+        self._lang = "zh" if self._lang == "en" else "en"
+        self._retranslate()
+
+    def _retranslate(self):
+        for widget, key, kind in self._i18n:
+            try:
+                self._apply_tr(widget, key, kind)
+            except RuntimeError:
+                pass                      # widget was deleted
+        self.compare_combo.setItemText(0, self.t("none"))
+        if getattr(self, "_vol_label", None) is not None:
+            self._vol_label.setText(self.t("vol_lbl"), color=MUT)
+        self._update_legend()
 
     def _exchange(self, sym):
         if sym.startswith("^"):
@@ -805,7 +948,7 @@ class SpikeWindow(QtWidgets.QMainWindow):
         end = self.end_date.date()
         if end < start:
             QtWidgets.QMessageBox.warning(
-                self, "Invalid range", "The 'To' date is before the 'From' date.")
+                self, self.t("invalid_range"), self.t("invalid_range_msg"))
             return
         start = start.toString("yyyy-MM-dd")
         end = end.toString("yyyy-MM-dd")
@@ -1020,14 +1163,14 @@ class SpikeWindow(QtWidgets.QMainWindow):
         if self._in_compare_mode():
             name = self._compare_name(self._compare_ticker)
             rows = [("#4f8cff", "—", f"{self.current_symbol or 'Stock'}  %"),
-                    (COMPARE, "—", f"{name}  %"),
+                    (COMPARE, "—", f"{name}  ({self.t('rebased')})"),
                     ("#ef4444", "—", f"{tag}{self._fast}"),
                     ("#7fb8ff", "—", f"{tag}{self._slow}")]
         else:
             rows = [(MA_FAST, "—", f"{tag}{self._fast}"),
                     (MA_SLOW, "—", f"{tag}{self._slow}"),
-                    (UP, "▲", "Golden cross"),
-                    (DOWN, "▼", "Death cross")]
+                    (UP, "▲", self.t("golden_cross")),
+                    (DOWN, "▼", self.t("death_cross"))]
         html = "".join(
             f"<div style='margin:5px 0;'>"
             f"<span style=\"color:{c};font-family:'JetBrains Mono';font-size:13px;\">{g}</span>"
@@ -1209,7 +1352,7 @@ class SpikeWindow(QtWidgets.QMainWindow):
         self._render_price()             # switch the price panel to percent mode
 
     def _on_compare_failed(self, ticker, message):
-        QtWidgets.QMessageBox.warning(self, "Index load failed", message)
+        QtWidgets.QMessageBox.warning(self, self.t("index_failed"), message)
 
     def _on_compare_finished(self):
         if self._compare_fetcher is not None:
@@ -1219,7 +1362,7 @@ class SpikeWindow(QtWidgets.QMainWindow):
     # ---- fetch lifecycle / lock ------------------------------------------
 
     def _on_failed(self, symbol, message):
-        QtWidgets.QMessageBox.warning(self, "Load failed", message)
+        QtWidgets.QMessageBox.warning(self, self.t("load_failed"), message)
         self._set_loading(False)
 
     def _on_fetch_finished(self):

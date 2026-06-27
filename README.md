@@ -20,6 +20,8 @@ index-comparison view. It launches **full screen**.
   (price / volume / RSI / MACD) and a sidebar of cards (Quote / Indicators /
   Comparison / Legend / Date Range). Launches full screen; **Exit** button or
   **Esc** to quit.
+- **Bilingual UI** — one-click toggle between **English** and **Traditional
+  Chinese (繁體中文)** for the whole interface.
 - **Real data, cached** — daily OHLC from Yahoo Finance, stored in a local
   SQLite database so repeat loads are instant and only missing dates are
   downloaded.
@@ -113,6 +115,7 @@ Use the Yahoo Finance symbol format:
 | **🔍 Find** | Open a lookup window to search ticker codes by company name across markets, then **Copy code** or **Use in chart**. |
 | **Timeframe** | Segmented `1M / 3M / 6M / 1Y / 5Y / MAX` — sets the visible window. |
 | **Zoom − / + / Reset** | Zoom the date range out/in, or reset to the default view. |
+| **中文 / EN** | Toggle the UI language (English ↔ Traditional Chinese). |
 | **✕ Exit** | Quit the app (also **Esc**). |
 
 **Sidebar — Indicators card**
