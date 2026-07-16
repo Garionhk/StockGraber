@@ -117,6 +117,29 @@ QToolTip {{ background-color: {INSET}; color: {TXT}; border: 1px solid {ACCENT};
 QScrollBar:vertical {{ background: transparent; width: 9px; margin: 0; }}
 QScrollBar::handle:vertical {{ background: #2a2e37; border-radius: 4px; min-height: 30px; }}
 QScrollBar::add-line, QScrollBar::sub-line {{ height: 0; }}
+QPushButton#chip {{
+    background-color: {INSET}; color: {TXT2};
+    border: 1px solid rgba(255,255,255,0.08); border-radius: 8px;
+    padding: 5px 4px; font-family: 'JetBrains Mono','Consolas',monospace;
+    font-size: 11px; font-weight: 600;
+}}
+QPushButton#chip:hover {{ border-color: {ACCENT}; color: #fff; }}
+QPushButton#chipon {{
+    background-color: rgba(168,85,247,0.18); color: #fff;
+    border: 1px solid {ACCENT}; border-radius: 8px;
+    padding: 5px 4px; font-family: 'JetBrains Mono','Consolas',monospace;
+    font-size: 11px; font-weight: 700;
+}}
+QMenu {{ background-color: {INSET}; color: {TXT2}; border: 1px solid #3a3f4b; }}
+QMenu::item:selected {{ background-color: {ACCENT}; color: #fff; }}
+/* ticker-field autocomplete popup */
+QListView {{
+    background-color: {INSET}; color: {TXT};
+    border: 1px solid #3a3f4b; outline: none;
+    font-family: 'JetBrains Mono','Consolas',monospace; font-size: 12px;
+    selection-background-color: {ACCENT}; selection-color: #fff;
+}}
+QListView::item {{ padding: 4px 6px; }}
 QDialog {{ background-color: {SHELL}; }}
 QTableWidget {{
     background-color: {INSET}; color: {TXT2}; gridline-color: #1c1c22;
@@ -183,6 +206,13 @@ TR = {
     "results_n": {"en": "{n} result(s) — double-click a row or 'Use in chart'.",
                   "zh": "{n} 個結果 — 雙擊一列或按「套用至圖表」。"},
     "no_match": {"en": "No matches.", "zh": "沒有符合的結果。"},
+    # recent-symbols card
+    "recent": {"en": "RECENT SYMBOLS", "zh": "最近使用代碼"},
+    "no_recent": {"en": "No symbols yet — load one to start.",
+                  "zh": "尚無記錄 — 載入一個代碼即可開始。"},
+    "chip_tip": {"en": "{sym} · used {n}× · last {when}\nClick to load, right-click to remove",
+                 "zh": "{sym} · 使用 {n} 次 · 最後 {when}\n按一下載入，右鍵移除"},
+    "remove": {"en": "Remove from history", "zh": "從記錄中移除"},
     # in-chart sub-panel label
     "vol_lbl": {"en": "Volume", "zh": "成交量"},
     # pop-up warnings
@@ -227,6 +257,26 @@ class ToggleSwitch(QtWidgets.QCheckBox):
         x = r.right() - d - 2 if on else r.left() + 3
         p.setBrush(QtGui.QColor("#ffffff"))
         p.drawEllipse(int(x), r.top() + 3, d, d)
+
+
+class SymbolLineEdit(QtWidgets.QLineEdit):
+    """Ticker field that drops down the full symbol history when activated,
+    and filters it as you type (manual entry still works normally)."""
+
+    def _popup_all(self):
+        c = self.completer()
+        if c is None or c.popup().isVisible():
+            return
+        c.setCompletionPrefix("")        # empty prefix -> show every symbol
+        c.complete()
+
+    def focusInEvent(self, ev):
+        super().focusInEvent(ev)
+        QtCore.QTimer.singleShot(0, self._popup_all)
+
+    def mousePressEvent(self, ev):
+        super().mousePressEvent(ev)
+        self._popup_all()
 
 
 def _card(title):
@@ -536,9 +586,19 @@ class SpikeWindow(QtWidgets.QMainWindow):
         h.setContentsMargins(16, 11, 16, 11)
         h.setSpacing(12)
 
-        self.symbol_input = QtWidgets.QLineEdit(self.INITIAL_SYMBOL)
+        self.symbol_input = SymbolLineEdit(self.INITIAL_SYMBOL)
         self.symbol_input.setFixedWidth(120)
         self.symbol_input.returnPressed.connect(self.load_symbol)
+        # dropdown of every previously used code, filtered as you type
+        self._sym_model = QtCore.QStringListModel([], self)
+        self._completer = QtWidgets.QCompleter(self._sym_model, self)
+        self._completer.setCaseSensitivity(QtCore.Qt.CaseSensitivity.CaseInsensitive)
+        self._completer.setFilterMode(QtCore.Qt.MatchFlag.MatchContains)
+        self._completer.setCompletionMode(
+            QtWidgets.QCompleter.CompletionMode.PopupCompletion)
+        self._completer.setMaxVisibleItems(12)
+        self._completer.activated.connect(self._on_symbol_picked)
+        self.symbol_input.setCompleter(self._completer)
         h.addWidget(self.symbol_input)
         self.load_button = QtWidgets.QPushButton()
         self.load_button.setObjectName("load")
@@ -618,6 +678,7 @@ class SpikeWindow(QtWidgets.QMainWindow):
         v.setSpacing(14)
 
         v.addWidget(self._build_quote_card())
+        v.addWidget(self._build_recent_card())
         v.addWidget(self._build_indicators_card())
         v.addWidget(self._build_comparison_card())
         v.addWidget(self._build_legend_card())
@@ -669,6 +730,71 @@ class SpikeWindow(QtWidgets.QMainWindow):
         self._reg(sub, "daily_close")
         v.addWidget(sub)
         return card
+
+    def _build_recent_card(self):
+        """Clickable chips for symbols previously charted (most recent first)."""
+        card, v = self._card_t("recent")
+        holder = QtWidgets.QWidget()
+        self.recent_grid = QtWidgets.QGridLayout(holder)
+        self.recent_grid.setContentsMargins(0, 0, 0, 0)
+        self.recent_grid.setSpacing(6)
+        v.addWidget(holder)
+        return card
+
+    def _refresh_recent(self):
+        """Rebuild the Recent chips from the SQLite history table."""
+        self._refresh_symbol_completer()   # keep the ticker dropdown in sync
+        while self.recent_grid.count():
+            item = self.recent_grid.takeAt(0)
+            w = item.widget()
+            if w is not None:
+                w.deleteLater()
+        try:
+            rows = data.recent_symbols(limit=15)
+        except Exception:
+            rows = []
+        if not rows:
+            lbl = QtWidgets.QLabel(self.t("no_recent"))
+            lbl.setWordWrap(True)
+            lbl.setStyleSheet(f"color:{MUT2}; font-size:12px;")
+            self.recent_grid.addWidget(lbl, 0, 0, 1, 3)
+            return
+        for i, r in enumerate(rows):
+            sym = r["symbol"]
+            b = QtWidgets.QPushButton(sym)
+            b.setObjectName("chipon" if sym == self.current_symbol else "chip")
+            b.setCursor(QtCore.Qt.CursorShape.PointingHandCursor)
+            b.setToolTip(self.t("chip_tip").format(
+                sym=sym, n=r["uses"], when=r["last_used"]))
+            b.clicked.connect(lambda _c, s=sym: self.load_symbol(s))
+            b.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
+            b.customContextMenuRequested.connect(
+                lambda _p, s=sym, btn=b: self._recent_menu(s, btn))
+            self.recent_grid.addWidget(b, i // 3, i % 3)
+
+    def _refresh_symbol_completer(self):
+        """Feed the ticker field's dropdown with the full symbol history."""
+        model = getattr(self, "_sym_model", None)
+        if model is None:
+            return
+        try:
+            rows = data.recent_symbols(limit=None)
+        except Exception:
+            rows = []
+        model.setStringList([r["symbol"] for r in rows])
+
+    def _on_symbol_picked(self, symbol):
+        """A code was chosen from the ticker field's dropdown -> load it."""
+        symbol = (symbol or "").strip().upper()
+        if symbol:
+            QtCore.QTimer.singleShot(0, lambda: self.load_symbol(symbol))
+
+    def _recent_menu(self, symbol, btn):
+        menu = QtWidgets.QMenu(self)
+        act = menu.addAction(self.t("remove"))
+        if menu.exec(btn.mapToGlobal(btn.rect().center())) is act:
+            data.forget_symbol(symbol)
+            self._refresh_recent()
 
     def _build_indicators_card(self):
         card, v = self._card_t("ma_crossover")
@@ -831,6 +957,8 @@ class SpikeWindow(QtWidgets.QMainWindow):
         self._lockable += list(self.preset_group.buttons())
         self._lockable += list(self.tf_group.buttons())
 
+        self._refresh_recent()           # show history before the first load lands
+
     # ---- small UI helpers ------------------------------------------------
 
     def _sep(self):
@@ -926,6 +1054,7 @@ class SpikeWindow(QtWidgets.QMainWindow):
         self.compare_combo.setItemText(0, self.t("none"))
         if getattr(self, "_vol_label", None) is not None:
             self._vol_label.setText(self.t("vol_lbl"), color=MUT)
+        self._refresh_recent()           # chip tooltips / empty-state text
         self._update_legend()
 
     def _exchange(self, sym):
@@ -986,6 +1115,12 @@ class SpikeWindow(QtWidgets.QMainWindow):
         self.symbol_input.setText(symbol)
         self._update_quote(symbol, df)
         self.setWindowTitle(f"{self.TITLE}  --  {symbol}")
+        # remember this symbol for quick reuse (only on a successful load)
+        try:
+            data.record_symbol(symbol)
+        except Exception:
+            pass
+        self._refresh_recent()
         self._set_loading(False)
         if self._compare_ticker:
             self._load_compare()

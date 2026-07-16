@@ -24,6 +24,8 @@ index-comparison view. It launches **full screen**.
   **Esc** to quit.
 - **Bilingual UI** — one-click toggle between **English** and **Traditional
   Chinese (繁體中文)** for the whole interface.
+- **Recent symbols** — every symbol you successfully chart is remembered in the
+  local database and listed as clickable chips for one-click reuse.
 - **Real data, cached** — daily OHLC from Yahoo Finance, stored in a local
   SQLite database so repeat loads are instant and only missing dates are
   downloaded.
@@ -135,6 +137,7 @@ Use the Yahoo Finance symbol format:
 | Card | What it does |
 |---|---|
 | **Quote** | Ticker, exchange, last close, change vs. previous day. |
+| **Recent symbols** | Chips for symbols you've charted before — click to reload, right-click to remove. The current symbol is highlighted. |
 | **Comparison** | Pick an index → percent-compare mode; **Off** to revert. |
 | **Legend** | Colour key for the lines currently drawn. |
 | **Date Range** | From / To dates (only missing dates are downloaded). |
@@ -228,9 +231,12 @@ StockGraber/
 - `ma_cross_markers(df, fast, slow, method)` — golden/death cross points.
 - `rsi(close, period=14)` — Wilder's RSI.
 - `macd(close, fast=12, slow=26, signal=9)` — MACD line, signal, histogram.
+- `record_symbol(symbol)` / `recent_symbols(limit)` / `forget_symbol(symbol)` —
+  the reuse history behind the **Recent symbols** card.
 
-The cache lives in two SQLite tables: `ohlc` (the candles, keyed by
-`symbol, date`) and `coverage` (the date span already fetched per symbol).
+The database has three SQLite tables: `ohlc` (the candles, keyed by
+`symbol, date`), `coverage` (the date span already fetched per symbol), and
+`history` (symbols you've charted, with use-count and last-used time).
 
 ### `StockGraber.py` — the app
 

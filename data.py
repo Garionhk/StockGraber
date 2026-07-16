@@ -71,7 +71,68 @@ def _connect() -> sqlite3.Connection:
         )
         """
     )
+    # symbols the user has actually charted, for quick reuse
+    conn.execute(
+        """
+        CREATE TABLE IF NOT EXISTS history (
+            symbol    TEXT PRIMARY KEY,
+            last_used TEXT NOT NULL,       -- ISO 'YYYY-MM-DD HH:MM:SS'
+            uses      INTEGER NOT NULL DEFAULT 1
+        )
+        """
+    )
     return conn
+
+
+def record_symbol(symbol):
+    """Remember a symbol the user successfully charted (upsert + bump count)."""
+    symbol = (symbol or "").strip().upper()
+    if not symbol:
+        return
+    now = pd.Timestamp.now().strftime("%Y-%m-%d %H:%M:%S")
+    conn = _connect()
+    try:
+        conn.execute(
+            """
+            INSERT INTO history (symbol, last_used, uses) VALUES (?, ?, 1)
+            ON CONFLICT(symbol) DO UPDATE SET
+                last_used = excluded.last_used, uses = history.uses + 1
+            """,
+            (symbol, now),
+        )
+        conn.commit()
+    finally:
+        conn.close()
+
+
+def recent_symbols(limit=15):
+    """Previously charted symbols, most recently used first.
+
+    Pass limit=None for the complete history.
+    """
+    query = ("SELECT symbol, last_used, uses FROM history "
+             "ORDER BY last_used DESC")
+    params = ()
+    if limit is not None:
+        query += " LIMIT ?"
+        params = (limit,)
+    conn = _connect()
+    try:
+        rows = conn.execute(query, params).fetchall()
+    finally:
+        conn.close()
+    return [{"symbol": r[0], "last_used": r[1], "uses": r[2]} for r in rows]
+
+
+def forget_symbol(symbol):
+    """Drop one symbol from the reuse history."""
+    symbol = (symbol or "").strip().upper()
+    conn = _connect()
+    try:
+        conn.execute("DELETE FROM history WHERE symbol = ?", (symbol,))
+        conn.commit()
+    finally:
+        conn.close()
 
 
 def _most_recent_weekday() -> pd.Timestamp:
